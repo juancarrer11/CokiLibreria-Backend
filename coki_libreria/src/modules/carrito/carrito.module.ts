@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CarritoController } from './carrito.controller';
 import { CarritoService } from './carrito.service';
+import { CarritoController } from './carrito.controller';
 
 @Module({
   controllers: [CarritoController],
