@@ -12,7 +12,6 @@ import {
 } from 'class-validator';
 import { ItemPedidoDto } from './item-pedido.dto';
 
-// El cliente no manda el estado: todo pedido nuevo arranca como "Pendiente".
 export class CreatePedidoDto {
   @IsString({ message: 'El nombre del cliente debe ser texto' })
   @IsNotEmpty({ message: 'El nombre del cliente es obligatorio' })

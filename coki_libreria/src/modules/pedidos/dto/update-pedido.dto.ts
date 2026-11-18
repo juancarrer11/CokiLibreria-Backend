@@ -10,7 +10,6 @@ export const ESTADOS_PEDIDO = [
   'Cancelado',
 ];
 
-// El estado solo se cambia al modificar el pedido (lo hace el admin desde el panel).
 export class UpdatePedidoDto extends PartialType(CreatePedidoDto) {
   @IsOptional()
   @IsIn(ESTADOS_PEDIDO, {

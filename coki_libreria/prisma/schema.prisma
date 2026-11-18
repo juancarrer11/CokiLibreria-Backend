@@ -1,13 +1,104 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "mysql"
+}
+
+model categorias {
+  id_categoria Int         @id @default(autoincrement())
+  nombre       String      @unique(map: "nombre") @db.VarChar(50)
+  productos    productos[]
+}
+
+model detalle_pedido {
+  id_detalle      Int       @id @default(autoincrement())
+  id_pedido       Int
+  id_producto     Int
+  cantidad        Int
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  pedidos         pedidos   @relation(fields: [id_pedido], references: [id_pedido], onDelete: Cascade, map: "fk_detalle_pedido")
+  productos       productos @relation(fields: [id_producto], references: [id_producto], map: "fk_detalle_producto")
+
+  @@unique([id_pedido, id_producto], map: "uq_detalle_pedido_producto")
+  @@index([id_producto], map: "fk_detalle_producto")
+}
+
+model estados_pedido {
+  id_estado Int       @id @default(autoincrement())
+  nombre    String    @unique(map: "nombre") @db.VarChar(30)
+  pedidos   pedidos[]
+}
+
+model impresiones {
+  id_impresion    Int                        @id @default(autoincrement())
+  id_pedido       Int
+  tipo_impresion  impresiones_tipo_impresion
+  tipo_papel      impresiones_tipo_papel
+  cantidad_copias Int
+  precio_unitario Decimal                    @db.Decimal(10, 2)
+  archivo         String                     @db.VarChar(150)
+  descripcion     String?                    @db.VarChar(255)
+  pedidos         pedidos                    @relation(fields: [id_pedido], references: [id_pedido], onDelete: Cascade, map: "fk_impresion_pedido")
+
+  @@index([id_pedido], map: "fk_impresion_pedido")
+}
+
+model pedidos {
+  id_pedido      Int              @id @default(autoincrement())
+  numero_retiro  String           @unique(map: "numero_retiro") @db.VarChar(10)
+  id_usuario     Int
+  fecha          DateTime         @db.Date
+  id_estado      Int              @default(1)
+  notas          String?          @db.VarChar(255)
+  detalle_pedido detalle_pedido[]
+  impresiones    impresiones[]
+  estados_pedido estados_pedido   @relation(fields: [id_estado], references: [id_estado], map: "fk_pedido_estado")
+  usuarios       usuarios         @relation(fields: [id_usuario], references: [id_usuario], map: "fk_pedido_usuario")
+
+  @@index([id_estado], map: "fk_pedido_estado")
+  @@index([id_usuario], map: "fk_pedido_usuario")
+}
+
+model productos {
+  id_producto    Int              @id @default(autoincrement())
+  nombre         String           @db.VarChar(100)
+  descripcion    String?          @db.VarChar(255)
+  precio         Decimal          @db.Decimal(10, 2)
+  stock          Int              @default(0)
+  id_categoria   Int
+  detalle_pedido detalle_pedido[]
+  categorias     categorias       @relation(fields: [id_categoria], references: [id_categoria], map: "fk_producto_categoria")
+
+  @@index([id_categoria], map: "fk_producto_categoria")
+}
+
+model usuarios {
+  id_usuario Int          @id @default(autoincrement())
+  nombre     String       @db.VarChar(80)
+  correo     String       @unique(map: "correo") @db.VarChar(120)
+  telefono   String?      @db.VarChar(20)
+  contrasena String       @db.VarChar(255)
+  rol        usuarios_rol @default(cliente)
+  fecha_alta DateTime     @default(now()) @db.DateTime(0)
+  pedidos    pedidos[]
+}
+
+enum impresiones_tipo_impresion {
+  Blanco_y_negro @map("Blanco y negro")
+  Color
+}
+
+enum impresiones_tipo_papel {
+  Papel_comun       @map("Papel común")
+  Papel_fotografico @map("Papel fotográfico")
+  Papel_adhesivo    @map("Papel adhesivo")
+}
+
+enum usuarios_rol {
+  cliente
+  admin
 }
