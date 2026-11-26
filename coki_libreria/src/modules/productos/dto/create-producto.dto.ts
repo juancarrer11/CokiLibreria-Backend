@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  IsUrl,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -16,22 +15,6 @@ export class CreateProductoDto {
   @MaxLength(100, { message: 'El nombre puede tener hasta 100 caracteres' })
   nombre: string;
 
-  @IsNumber(
-    { maxDecimalPlaces: 2 },
-    { message: 'El precio debe ser un número con hasta 2 decimales' },
-  )
-  @IsPositive({ message: 'El precio debe ser mayor a 0' })
-  precio: number;
-
-  @IsString({ message: 'La categoría debe ser texto' })
-  @IsNotEmpty({ message: 'La categoría es obligatoria' })
-  @MaxLength(50, { message: 'La categoría puede tener hasta 50 caracteres' })
-  categoria: string;
-
-  @IsInt({ message: 'El stock debe ser un número entero' })
-  @Min(0, { message: 'El stock no puede ser negativo' })
-  stock: number;
-
   @IsOptional()
   @IsString({ message: 'La descripción debe ser texto' })
   @MaxLength(255, {
@@ -39,7 +22,18 @@ export class CreateProductoDto {
   })
   descripcion?: string;
 
-  @IsOptional()
-  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
-  imagen?: string;
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'El precio debe ser un número con hasta 2 decimales' },
+  )
+  @IsPositive({ message: 'El precio debe ser mayor a 0' })
+  precio: number;
+
+  @IsInt({ message: 'El stock debe ser un número entero' })
+  @Min(0, { message: 'El stock no puede ser negativo' })
+  stock: number;
+
+  @IsInt({ message: 'El id de la categoría debe ser un número entero' })
+  @IsPositive({ message: 'El id de la categoría debe ser mayor a 0' })
+  id_categoria: number;
 }
