@@ -138,7 +138,7 @@ export class CarritoService {
   ) {
     if (cantidad > producto.stock) {
       throw new BadRequestException(
-        `No hay stock suficiente de ${producto.nombre}: quedan ${producto.stock} unidades`,
+        `No hay stock suficiente de ${producto.nombre}: ${this.textoStock(producto.stock)}`,
       );
     }
   }
@@ -155,6 +155,10 @@ export class CarritoService {
       },
       subtotal: this.redondear(precio * item.cantidad),
     };
+  }
+
+  private textoStock(stock: number) {
+    return stock === 1 ? 'queda 1 unidad' : `quedan ${stock} unidades`;
   }
 
   private redondear(valor: number) {
