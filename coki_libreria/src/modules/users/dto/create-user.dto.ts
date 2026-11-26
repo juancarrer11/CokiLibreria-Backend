@@ -8,19 +8,21 @@ import {
   IsStrongPassword,
   Length,
   Matches,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateUserDto {
   @IsString({ message: 'El nombre debe ser texto' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
-  @Length(3, 50, { message: 'El nombre debe tener entre 3 y 50 caracteres' })
+  @Length(3, 80, { message: 'El nombre debe tener entre 3 y 80 caracteres' })
   @Matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, {
     message: 'El nombre solo puede contener letras y espacios',
   })
   nombre: string;
 
-  @IsEmail({}, { message: 'El email no es válido' })
-  email: string;
+  @IsEmail({}, { message: 'El correo no es válido' })
+  @MaxLength(120, { message: 'El correo puede tener hasta 120 caracteres' })
+  correo: string;
 
   @IsStrongPassword(
     {
@@ -35,7 +37,7 @@ export class CreateUserDto {
         'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial',
     },
   )
-  password: string;
+  contrasena: string;
 
   @IsOptional()
   @IsPhoneNumber('AR', { message: 'El teléfono no es válido' })
