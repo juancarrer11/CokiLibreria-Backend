@@ -1,19 +1,19 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsIn, IsOptional } from 'class-validator';
-import { CreatePedidoDto } from './create-pedido.dto';
+import {
+  IsInt,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
-export const ESTADOS_PEDIDO = [
-  'Pendiente',
-  'En preparación',
-  'Listo',
-  'Entregado',
-  'Cancelado',
-];
-
-export class UpdatePedidoDto extends PartialType(CreatePedidoDto) {
+export class UpdatePedidoDto {
   @IsOptional()
-  @IsIn(ESTADOS_PEDIDO, {
-    message: `El estado debe ser uno de: ${ESTADOS_PEDIDO.join(', ')}`,
-  })
-  estado?: string;
+  @IsInt({ message: 'El id del estado debe ser un número entero' })
+  @IsPositive({ message: 'El id del estado debe ser mayor a 0' })
+  id_estado?: number;
+
+  @IsOptional()
+  @IsString({ message: 'Las notas deben ser texto' })
+  @MaxLength(255, { message: 'Las notas pueden tener hasta 255 caracteres' })
+  notas?: string;
 }
