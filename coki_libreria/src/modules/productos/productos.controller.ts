@@ -1,11 +1,12 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
@@ -26,20 +27,20 @@ export class ProductosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productosService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productosService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateProductoDto: UpdateProductoDto,
   ) {
-    return this.productosService.update(+id, updateProductoDto);
+    return this.productosService.update(id, updateProductoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productosService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productosService.remove(id);
   }
 }
