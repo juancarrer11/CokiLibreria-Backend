@@ -1,11 +1,12 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { ImpresionesService } from './impresiones.service';
 import { CreateImpresionDto } from './dto/create-impresion.dto';
@@ -25,21 +26,26 @@ export class ImpresionesController {
     return this.impresionesService.findAll();
   }
 
+  @Get('pedido/:id_pedido')
+  findByPedido(@Param('id_pedido', ParseIntPipe) id_pedido: number) {
+    return this.impresionesService.findByPedido(id_pedido);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.impresionesService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.impresionesService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateImpresionDto: UpdateImpresionDto,
   ) {
-    return this.impresionesService.update(+id, updateImpresionDto);
+    return this.impresionesService.update(id, updateImpresionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.impresionesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.impresionesService.remove(id);
   }
 }
