@@ -6,6 +6,10 @@ import {
 import { randomInt } from 'crypto';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  nombreTipoImpresion,
+  nombreTipoPapel,
+} from '../impresiones/impresiones.opciones';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
 
@@ -21,6 +25,7 @@ const DETALLE_COMPLETO = {
     include: { productos: { select: { nombre: true } } },
     orderBy: { id_detalle: 'asc' },
   },
+  impresiones: { orderBy: { id_impresion: 'asc' } },
 } as const;
 
 type PedidoCompleto = Prisma.pedidosGetPayload<{
@@ -263,6 +268,23 @@ export class PedidosService {
       };
     });
 
+    const impresiones = pedido.impresiones.map((impresion) => {
+      const precio = Number(impresion.precio_unitario);
+      return {
+        id_impresion: impresion.id_impresion,
+        tipo_impresion: nombreTipoImpresion(impresion.tipo_impresion),
+        tipo_papel: nombreTipoPapel(impresion.tipo_papel),
+        cantidad_copias: impresion.cantidad_copias,
+        precio_unitario: precio,
+        subtotal: this.redondear(precio * impresion.cantidad_copias),
+        archivo: impresion.archivo,
+      };
+    });
+
+    const subtotales = [...items, ...impresiones].map(
+      (linea) => linea.subtotal,
+    );
+
     return {
       id_pedido: pedido.id_pedido,
       numero_retiro: pedido.numero_retiro,
@@ -272,8 +294,9 @@ export class PedidosService {
       usuario: pedido.usuarios,
       notas: pedido.notas,
       items,
+      impresiones,
       total: this.redondear(
-        items.reduce((suma, item) => suma + item.subtotal, 0),
+        subtotales.reduce((suma, subtotal) => suma + subtotal, 0),
       ),
     };
   }
